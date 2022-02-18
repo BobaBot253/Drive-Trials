@@ -1,16 +1,17 @@
 package frc.robot.commands;
 
-import java.util.Set;
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Drivetrain;
+
+import java.util.Set;
 
 public class Drive implements Command {
     public enum State {
@@ -29,6 +30,10 @@ public class Drive implements Command {
         // Retrieving the deadbanded throttle and turn values (the controller joystick values)
         double throttle = RobotContainer.getThrottleValue();
         double turn = RobotContainer.getTurnValue();
+
+        SmartDashboard.putNumber("turn input", turn);
+        SmartDashboard.putNumber("throttle input", throttle);
+
         double left, right;
         
         switch (state) {
@@ -116,6 +121,7 @@ public class Drive implements Command {
 
         Drivetrain.setOpenLoop(left, right);
     }
+    
     // When this command ends, it stops the drivetrain to guarantee safety
     @Override
     public void end(boolean interrupted) {

@@ -46,7 +46,7 @@ public class RobotContainer {
     private RobotContainer() {
         drivetrain = Drivetrain.getInstance();
         drivetrain.setDefaultCommand(new Drive(Drive.State.CheesyDriveOpenLoop));
-        intake = Intake.getInstance();
+        /*intake = Intake.getInstance();
 
         conveyor = Conveyor.getInstance();
         conveyor.setDefaultCommand(new ConveyorQueue(ConveyorQueue.State.None));
@@ -55,7 +55,7 @@ public class RobotContainer {
 
         arm = Arm.getInstance();
 
-        shooter = Shooter.getInstance();
+        shooter = Shooter.getInstance();*/
 
         bindOI();
     }
@@ -65,7 +65,7 @@ public class RobotContainer {
      */
     private void bindOI() {
         
-        // Flip down intake arm and spin when RB is held, flip back up and stop spinning when released
+        /*// Flip down intake arm and spin when RB is held, flip back up and stop spinning when released
          driver_RB.whileHeld(new RunCommand(()->arm.rotate(-0.4), arm)
                      .alongWith(new RunCommand( ()->intake.intake(0.5)))
                      .alongWith(new RunCommand( ()->intake.setConveyor(0.5))))
@@ -100,7 +100,7 @@ public class RobotContainer {
                       .whenReleased(new InstantCommand(intake::stopIntake, intake));
          operator_B.whileHeld(new RunCommand(()-> intake.setConveyor(-0.5), intake))
          .whenReleased(new InstantCommand(intake::stopIntake, intake));
-         
+         */
      }
  
 
