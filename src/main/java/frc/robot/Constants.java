@@ -42,7 +42,7 @@ public class Constants {
         public static final double kD = 0;
 
         /* Wheels Constants */
-        public static final double kTicksPerRotation = 2048 * 10.42; // Falcon 500 integrated encoder (2048 CPR)
+        public static final double kTicksPerRotation = 2048 * 10.71; // Falcon 500 integrated encoder (2048 CPR)
                                                                      // multiplied by gear ratio (10.42:1)
         public static final double kWheelDiameter = Units.InchesToMeters(6);
 

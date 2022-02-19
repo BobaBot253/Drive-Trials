@@ -7,7 +7,11 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.DriveXMeters;
+import frc.robot.commands.TurnXDegrees;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -58,9 +62,14 @@ public class Robot extends TimedRobot {
    * below with additional strings. If using the SendableChooser make sure to add them to the
    * chooser code above as well.
    */
+  private Command auto;
   @Override
   public void autonomousInit() {
-    
+    CommandScheduler.getInstance().schedule(
+      (auto = new SequentialCommandGroup(
+        new DriveXMeters(-1, 0.1, 0.1)
+        //new DriveXMeters(1, 0.1, 0.1)
+      )));
   }
 
   /** This function is called periodically during autonomous. */
