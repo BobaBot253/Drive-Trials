@@ -7,16 +7,16 @@ public class Constants {
 
     /* Controllers Input */
     public static class InputPorts {
-        public static final int driver_Controller = 0;
-        public static final int operator_Controller = 1;
+        public static final int driver_Controller = 1;
+        public static final int operator_Controller = 0;
     }
 
     /* Differential Drive Settings */
     public static class DriverConstants {
         /* Common drive mode settings */
         public static final double kJoystickDeadband = 0.07; // How much of joystick is "dead" zone [0,1]
-        public static final double kDriveSens = 0.3; // Overall speed setting (turn down for demos) [0,1]
-        public static final double kTurnInPlaceSens = 0.2; // Maximum turn-in-place rate (in percent of max) to allow
+        public static final double kDriveSens = 1.0; // Overall speed setting (turn down for demos) [0,1]
+        public static final double kTurnInPlaceSens = 0.4; // Maximum turn-in-place rate (in percent of max) to allow
                                                             // robot to turn to [0,1]
         public static final double kTurnSens = 1.0; // Maximum normal turning rate (in percent of max) to allow robot to
                                                   // turn to [0,1]
@@ -100,7 +100,7 @@ public class Constants {
     }
     // TODO: Tune
     public static class ShooterConstants {
-        public static final int master = 8;
+        public static final int master = 8; 
         public static final int slave = 9;
 
         /* PIDController Constants, Slot 0, RPM Velocity Control */ 

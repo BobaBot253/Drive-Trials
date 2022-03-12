@@ -4,10 +4,19 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.Drive;
+import frc.robot.commands.DriveXMeters;
+import frc.robot.subsystems.Drivetrain;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -21,16 +30,20 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private RobotContainer robot;
+  private Trajectory autoTrajectory;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   @Override
   public void robotInit() {
+    PowerDistribution pdp = new PowerDistribution();
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
     robot = RobotContainer.getInstance();
+    pdp.clearStickyFaults();
+    autoTrajectory = RobotContainer.getTrajectory();
   }
 
   /**
@@ -56,20 +69,45 @@ public class Robot extends TimedRobot {
    * below with additional strings. If using the SendableChooser make sure to add them to the
    * chooser code above as well.
    */
+  RamseteController controller;
+  Timer autoTimer;
   @Override
   public void autonomousInit() {
-    
+    controller = new RamseteController();
+    autoTimer = new Timer();
+    autoTimer.start();
+    if(m_chooser.getSelected().equals(kDefaultAuto)) {
+      CommandScheduler.getInstance().schedule(new DriveXMeters(-Units.FeetToMeters(3), 0.2, 0.1));
+    }
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    
+    switch(m_chooser.getSelected()) {
+      case kCustomAuto:
+        Trajectory.State goal = autoTrajectory.sample(autoTimer.get());
+        ChassisSpeeds adjustedSpeeds = controller.calculate(Drivetrain.ODOMETRY.getPoseMeters(), goal);
+        DifferentialDriveWheelSpeeds wheelSpeeds = Drivetrain.KINEMATICS.toWheelSpeeds(adjustedSpeeds);
+        double left = wheelSpeeds.leftMetersPerSecond;
+        double right = wheelSpeeds.rightMetersPerSecond;
+        SmartDashboard.putNumber("leftTrajSpeed", left);
+        SmartDashboard.putNumber("rightTrajSpeed", right);
+        left = Drivetrain.FEEDFORWARD.calculate(left);
+        right = Drivetrain.FEEDFORWARD.calculate(right);
+        SmartDashboard.putNumber("leftTrajVoltage", left);
+        SmartDashboard.putNumber("rightTrajVoltage", right);
+        SmartDashboard.putNumber("Trajectory Duration", autoTrajectory.getTotalTimeSeconds());
+        Drivetrain.setOpenLoop(left/Constants.kMaxVoltage, right/Constants.kMaxVoltage);
+        break;
+    }
   }
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    Drivetrain.getInstance().setDefaultCommand(new Drive(Drive.State.CheesyDriveOpenLoop));
+  }
 
   /** This function is called periodically during operator control. */
   @Override

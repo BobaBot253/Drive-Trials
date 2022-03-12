@@ -1,6 +1,17 @@
 package frc.robot;
 
+import java.util.List;
+
+import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -21,6 +32,7 @@ public class RobotContainer {
     public static Climber climber;
     public static Arm arm;
     public boolean goShooter = false;
+    public static AHRS navX;
     private static final XboxController driver = new XboxController(Constants.InputPorts.driver_Controller);
 
     private static final XboxController operator = new XboxController(Constants.InputPorts.operator_Controller);
@@ -44,18 +56,19 @@ public class RobotContainer {
             operator_DPAD_RIGHT = new POVButton(driver, 90), operator_DPAD_DOWN = new POVButton(operator, 180),
             operator_DPAD_LEFT = new POVButton(driver, 270);
     private RobotContainer() {
+        navX = new AHRS(Port.kMXP);
         drivetrain = Drivetrain.getInstance();
-        drivetrain.setDefaultCommand(new Drive(Drive.State.CheesyDriveOpenLoop));
-        intake = Intake.getInstance();
+        //drivetrain.setDefaultCommand(new Drive(Drive.State.CheesyDriveOpenLoop));
+        //intake = Intake.getInstance();
 
-        conveyor = Conveyor.getInstance();
+        /*conveyor = Conveyor.getInstance();
         conveyor.setDefaultCommand(new ConveyorQueue(ConveyorQueue.State.None));
 
         climber = Climber.getInstance();
 
         arm = Arm.getInstance();
 
-        shooter = Shooter.getInstance();
+        shooter = Shooter.getInstance();*/
 
         bindOI();
     }
@@ -66,41 +79,50 @@ public class RobotContainer {
     private void bindOI() {
         
         // Flip down intake arm and spin when RB is held, flip back up and stop spinning when released
-         driver_RB.whileHeld(new RunCommand(()->arm.rotate(-0.4), arm)
+         /*driver_RB.whileHeld(new RunCommand(()->arm.rotate(-0.4), arm)
                      .alongWith(new RunCommand( ()->intake.intake(0.5)))
                      .alongWith(new RunCommand( ()->intake.setConveyor(0.5))))
                  .whenReleased(new RunCommand( ()->arm.rotate(0.35), arm)
                      .alongWith(new InstantCommand(intake::stopIntake)));
-     
+     */
          // Spin up shooter when LB is held, stop when released
-         driver_LB.whileHeld(new Shoot());
+         //driver_LB.whileHeld(new Shoot());
  
          // Flip intake down and spin outwards to sweep balls out of the way when A is held, flip up and stop when released
-         driver_A.whileHeld(new RunCommand(()->arm.rotate(-0.4), arm)
+         /*driver_A.whileHeld(new RunCommand(()->arm.rotate(-0.4), arm)
                      .alongWith(new RunCommand( ()->intake.intake(-0.5))))
                  .whenReleased(new RunCommand( ()->arm.rotate(0.35), arm)
                      .alongWith(new InstantCommand(intake::stopIntake)));   
- 
+ */
          // Run both climbers when DPAD up is held
-         operator_DPAD_UP.whileHeld(new Climb(Climb.Side.BOTH, 0.5));
-         operator_DPAD_DOWN.whileHeld(new Climb(Climb.Side.BOTH, -0.5));
+         //operator_DPAD_UP.whileHeld(new Climb(Climb.Side.BOTH, 0.5));
+         //operator_DPAD_DOWN.whileHeld(new Climb(Climb.Side.BOTH, -0.5));
  
          // Run the right and left climbers when view and menu are held, respectively
-         operator_VIEW.whileHeld(new Climb(Climb.Side.LEFT, 0.5));
-         operator_MENU.whileHeld(new Climb(Climb.Side.RIGHT, 0.5));
+         //operator_VIEW.whileHeld(new Climb(Climb.Side.LEFT, 0.5));
+         //operator_MENU.whileHeld(new Climb(Climb.Side.RIGHT, 0.5));
  
          // 2nd Controller vertical conveyor up and down respectively
-         operator_Y.whileHeld(new RunCommand(()-> conveyor.setOpenLoop(0.55), conveyor))
+        /* operator_Y.whileHeld(new RunCommand(()-> conveyor.setOpenLoop(0.55), conveyor))
                     .whenReleased(new InstantCommand(conveyor::stop, conveyor));
          operator_A.whileHeld(new RunCommand(()-> conveyor.setOpenLoop(-0.55), conveyor)) 
                     .whenReleased(new InstantCommand(conveyor::stop, conveyor));
- 
+ */
          // 2nd controller horizontal conveyor in and out respectively
-         operator_X.whileHeld(new RunCommand(()-> intake.setConveyor(0.5), intake))
+         /*operator_X.whileHeld(new RunCommand(()-> intake.setConveyor(0.5), intake))
                       .whenReleased(new InstantCommand(intake::stopIntake, intake));
          operator_B.whileHeld(new RunCommand(()-> intake.setConveyor(-0.5), intake))
          .whenReleased(new InstantCommand(intake::stopIntake, intake));
-         
+         */
+     }
+
+     public static Trajectory getTrajectory() {
+        Trajectory traj = TrajectoryGenerator.generateTrajectory(
+            new Pose2d(0, 0, Rotation2d.fromDegrees(0)),
+            List.of(new Translation2d(Units.FeetToMeters(1.5), Units.FeetToMeters(0.5))),
+            new Pose2d(Units.FeetToMeters(3), Units.FeetToMeters(0), Rotation2d.fromDegrees(0)),
+            new TrajectoryConfig(Units.FeetToMeters(0.5), Units.FeetToMeters(0.5)));
+            return traj;
      }
  
 
