@@ -117,11 +117,12 @@ public class RobotContainer {
      }
 
      public static Trajectory getTrajectory() {
+        TrajectoryConfig config = new TrajectoryConfig(Units.FeetToMeters(0.5), Units.FeetToMeters(0.5));
         Trajectory traj = TrajectoryGenerator.generateTrajectory(
             new Pose2d(0, 0, Rotation2d.fromDegrees(0)),
             List.of(new Translation2d(Units.FeetToMeters(1.5), Units.FeetToMeters(0.5))),
             new Pose2d(Units.FeetToMeters(3), Units.FeetToMeters(0), Rotation2d.fromDegrees(0)),
-            new TrajectoryConfig(Units.FeetToMeters(0.5), Units.FeetToMeters(0.5)));
+            config);
             return traj;
      }
  
